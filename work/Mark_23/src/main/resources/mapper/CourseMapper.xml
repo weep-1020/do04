@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.md.dao.CourseMapper" >
+    <select id="findAll" resultType="cn.md.entity.Course">
+        select * from t_course;
+    </select>
+    <select id="findOne"
+            parameterType="String"
+            resultType="cn.md.entity.Course">
+        select * from t_course where cno=#{cno};
+    </select>
+    <insert id="add" parameterType="cn.md.entity.Course">
+        insert into t_course(cno, cname)
+        values (#{cno}, #{cname})
+    </insert>
+    <update id="update" parameterType="cn.md.entity.Course">
+        update t_course set cname=#{cname}
+        where cno = #{cno}
+    </update>
+    <delete id="remove" parameterType="String" >
+        delete from t_course where cno = #{cno}
+    </delete>
+</mapper>
