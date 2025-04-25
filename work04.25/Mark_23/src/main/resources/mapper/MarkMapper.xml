@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.md.dao.MarkMapper">
+    <resultMap id="markResult" type="cn.md.entity.Mark">
+        <id column="mark_id" property="markId"/>
+        <result column="total_score" property="totalScore"/>
+        <result column="term_id" property="termId"/>
+        <result column="usual_score" property="usualScore"/>
+        <result column="exam_score" property="examScore"/>
+        <association property="userAccount" javaType="cn.md.entity.UserAccount">
+        <id column="uid" property="uid"/>
+        <result column="uname" property="uname"/>
+        </association>
+        <association property="clz" javaType="cn.md.entity.Clz">
+            <id column="clzno" property="clzno"/>
+            <result column="clzname" property="clzname"/>
+        </association>
+        <association property="course" javaType="cn.md.entity.Course">
+            <id column="cno" property="cno"/>
+            <result column="cname" property="cname"/>
+        </association>
+    </resultMap>
+    <select id="findByUid" resultMap="markResult">
+        SELECT
+            t_mark.mark_id,
+            t_mark.term_id,
+            t_mark.student_id,
+            t_mark.course_id,
+            t_course.cno,
+            t_course.cname,
+            t_mark.usual_score,
+            t_mark.exam_score,
+            t_mark.total_score
+        FROM
+            t_mark
+                JOIN t_user ON t_user.uid = t_mark.student_id
+                JOIN t_course ON t_mark.course_id = t_course.cno
+        WHERE t_mark.student_id = #{uid}
+    </select>
+    <select id="findMarkInfoByClzAndCourse" resultMap="markResult">
+        SELECT
+            *
+        FROM
+            t_mark
+                JOIN t_user ON t_mark.student_id = t_user.uid
+                JOIN t_clz ON t_mark.clzno = t_clz.clzno
+                JOIN t_course ON t_mark.course_id = t_course.cno
+        WHERE
+            t_mark.clzno = #{clzno}
+                AND t_mark.course_id = #{cno}
+    </select>
+
+    <select id="findByUidCno" resultMap="markResult">
+        SELECT * FROM t_mark WHERE t_mark.student_id = #{uid} AND t_mark.course_id = #{cno};
+    </select>
+    <update id="update" parameterType="cn.md.entity.Mark">
+        UPDATE t_mark
+        SET
+            usual_score = #{usualScore},
+            exam_score = #{examScore},
+            total_score = #{totalScore}
+        WHERE
+            student_id = #{userAccount.uid}
+            AND course_id = #{course.cno}
+            AND clzno = #{clz.clzno}
+    </update>
+    <insert id="add" parameterType="cn.md.entity.Mark">
+        INSERT INTO t_mark(term_id,student_id,course_id,clzno,usual_score,exam_score,total_score)
+        VALUES(#{termId},#{studentId},#{course.cno},#{clz.clzno},#{usualScore},#{examScore},#{totalScore})
+    </insert>
+</mapper>
