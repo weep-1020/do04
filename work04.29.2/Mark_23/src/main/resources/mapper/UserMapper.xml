@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.md.dao.UserMapper">
+    <resultMap id="userClz" type="cn.md.entity.UserAccount">
+        <id property="uid" column="uid"/>
+        <result property="uname" column="uname"/>
+        <result property="phone" column="phone"/>
+        <result property="password" column="password"/>
+        <result property="role" column="role"/>
+        <result property="sex" column="sex"/>
+        <result property="birthday" column="birthday"/>
+        <result property="pic" column="pic"/>
+        <result property="excellence" column="excellence"/>
+        <association property="clz" javaType="cn.md.entity.Clz">
+            <id property="clzno" column="clzno"/>
+            <result property="clzname" column="clzname"/>
+        </association>
+        <association property="grade" javaType="cn.md.entity.Grade">
+            <id property="xid" column="xid"/>
+            <result property="grade" column="grade"/>
+        </association>
+
+    </resultMap>
+
+    <!-- 根据电话号码查询用户信息 -->
+    <!-- 参数：String phone - 用户电话号码 -->
+    <!-- 返回值：cn.md.entity.UserAccount - 用户账户信息 -->
+    <select id="findOneByPhone" parameterType="String" resultMap="userClz"
+            resultType="cn.md.entity.UserAccount">
+        select *
+        from t_user
+        where phone = #{phone}
+    </select>
+
+    <!-- 根据角色查询用户信息 -->
+    <!-- 参数：String role - 用户角色 -->
+    <!-- 返回值：cn.md.entity.UserAccount - 用户账户信息 -->
+    <select id="findByRole" parameterType="String" resultMap="userClz"
+            resultType="cn.md.entity.UserAccount">
+        SELECT t_user.uid      uid,
+               t_user.uname    uname,
+               t_user.phone    phone,
+               t_user.password  password,
+               t_user.clzno    clzno,
+               t_user.role     role,
+               t_clz.clzname   clzname
+        FROM t_user
+                 LEFT JOIN t_clz
+                           ON (t_user.clzno = t_clz.clzno)
+                 LEFT JOIN t_grade
+        ON (t_user.xid = t_grade.xid)
+        where t_user.role = #{role}
+    </select>
+
+    <!-- 根据班级编号查询学生用户信息 -->
+    <!-- 参数：String clzno - 班级编号 -->
+    <!-- 返回值：cn.md.entity.UserAccount - 用户账户信息 -->
+    <select id="findStusByclz" parameterType="String" resultMap="userClz"
+            resultType="cn.md.entity.UserAccount">
+        SELECT t_user.uid    uid,
+               t_user.uname,
+               t_user.phone  phone,
+               t_user.password    password,
+               t_user.clzno  clzno,
+               t_user.role   roe,
+               t_clz.clzname clzname
+        FROM t_user
+                 LEFT JOIN t_clz
+                           ON (t_user.clzno = t_clz.clzno)
+        where t_user.role = "stu"
+          AND t_user.clzno = #{clzno}
+    </select>
+
+    <!-- 根据用户ID查询用户信息 -->
+    <!-- 参数：int uid - 用户ID -->
+    <!-- 返回值：cn.md.entity.UserAccount - 用户账户信息 -->
+    <select id="findByUid" parameterType="int" resultMap="userClz"
+            resultType="cn.md.entity.UserAccount">
+        SELECT t_user.uid    uid,
+               t_user.uname,
+               t_user.phone  phone,
+               t_user.password    password,
+               t_user.clzno  clzno,
+               t_user.role   role,
+               t_clz.clzname clzname
+        FROM t_user
+                 LEFT JOIN t_clz
+                           ON (t_user.clzno = t_clz.clzno)
+        where t_user.uid = #{uid}
+    </select>
+
+    <!-- 添加用户信息 -->
+    <!-- 参数：cn.md.entity.UserAccount - 用户账户信息 -->
+    <insert id="add" parameterType="cn.md.entity.UserAccount">
+        insert into t_user(uname, phone, password,sex, clzno, role,
+                           birthday,pic,xid,is_deleted)
+        values (#{uname}, #{phone}, #{password},#{sex},#{clz.clzno},
+                #{role},#{birthday},#{pic},#{grade.xid},#{is_deleted})
+    </insert>
+
+    <!-- 更新用户信息 -->
+    <!-- 参数：cn.md.entity.UserAccount - 用户账户信息 -->
+    <update id="update"  parameterType="cn.md.entity.UserAccount" >
+        update t_user
+        <set>
+            <if test="uname != null">uname = #{uname},</if>
+            <if test="phone != null">phone = #{phone},</if>
+            <if test="password != null">password = #{password},</if>
+            <if test="clz.clzno != null">clzno = #{clz.clzno},</if>
+            <if test="grade.xid != null">xid = #{grade.xid},</if>
+            <if test="pic != null">pic = #{pic},</if>
+            <if test="role != null">role = #{role}</if>
+        </set>
+        where uid = #{uid}
+    </update>
+
+    <!-- 更新用户密码等信息 -->
+    <!-- 参数：cn.md.entity.UserAccount - 用户账户信息 -->
+    <update id="updatePwd" parameterType="cn.md.entity.UserAccount">
+        update t_user
+        <set>
+            <if test="uname!=null">uname = #{uname},</if>
+            <if test="phone!=null">phone = #{phone},</if>
+            <if test="pwd!=null">password = #{password},</if>
+            <if test="clzno!=null">clzno = #{clzno},</if>
+            <if test="pic!=null">pic=#{pic}</if>
+        </set>
+        where uid = #{uid}
+    </update>
+
+    <!-- 逻辑删除用户 -->
+    <!-- 参数：int uid - 用户ID -->
+    <insert id="remove" parameterType="int">
+        UPDATE t_user set t_user.is_deleted = ${is_deleted} where uid = ${uid}
+    </insert>
+
+    <!-- 查询用户数量 -->
+    <!-- 参数：String role - 用户角色 -->
+    <!-- 返回值：int - 用户数量 -->
+    <select id="getCount" parameterType="String">
+        select count(*)
+        from t_user
+        where role = #{role}
+        <if test="uname!=null">
+            AND t_user.uname like concat('%',#{uname},'%')
+        </if>
+        <if test="clzno!=null">
+            AND t_user.clzno = #{clzno}
+        </if>
+        <if test="xid!=null">
+            AND t_user.xid = #{xid}
+        </if>
+        AND t_user.is_deleted = 0
+    </select>
+
+    <!-- 分页查询用户信息 -->
+    <!-- 参数：cn.md.entity.UserAccount - 用户账户信息 -->
+    <select id="findPageByRole" parameterType="cn.md.entity.UserAccount" resultMap="userClz">
+        SELECT *
+        FROM t_user
+                 LEFT JOIN t_clz
+                           ON (t_user.clzno = t_clz.clzno)
+                 LEFT JOIN t_grade
+        ON (t_user.xid = t_grade.xid)
+        where t_user.role = #{role}
+        <if test="uname!=null">
+            AND t_user.uname like concat('%',#{uname},'%')
+        </if>
+        <if test="clzno!=null">
+            AND t_user.clzno = #{clzno}
+        </if>
+        <if test="xid!=null">
+            AND t_user.xid = #{xid}
+        </if>
+        AND t_user.is_deleted = 0
+        limit #{pagenum},#{lines}
+    </select>
+
+    <!-- 更新用户密码 -->
+    <!-- 参数：cn.md.entity.UserAccount - 用户账户信息 -->
+    <update id="updatePwdFromPhone" parameterType="cn.md.entity.UserAccount">
+        UPDATE t_user set t_user.password = #{password} where phone = #{phone}
+    </update>
+
+    <!-- 查询教师所教的班级 -->
+    <!-- 参数：cn.md.entity.UserAccount - 用户账户信息 -->
+    <!-- 返回值：List<Map<String, Object>> - 班级信息列表 -->
+    <select id="selectByUid" parameterType="cn.md.entity.UserAccount" resultMap="userClz">
+        SELECT c.clzno, c.clzname
+        FROM t_clz c
+                 JOIN t_user u ON c.clzno = u.clzno
+        WHERE u.role = 'teacher' AND u.uid = #{uid};
+    </select>
+
+    <resultMap id="userResult" type="cn.md.entity.UserAccount">
+        <id property="uid" column="uid"/>
+        <result property="uname" column="uname"/>
+        <result property="xid" column="xid"/>
+        <association property="clz" javaType="cn.md.entity.Clz">
+            <id property="clzno" column="clzno"/>
+            <result property="clzname" column="clzname"/>
+        </association>
+        <association property="course" javaType="cn.md.entity.Course">
+            <id property="cno" column="cno"/>
+            <result property="cname" column="cname"/>
+        </association>
+        <association property="mark" javaType="cn.md.entity.Mark">
+            <id column="mark_id" property="markId"/>
+            <result column="term_id" property="termId"/>
+            <result column="total_score" property="totalScore"/>
+            <result column="usual_score" property="usualScore"/>
+            <result column="exam_score" property="examScore"/>
+        </association>
+    </resultMap>
+    <select id="findMark" resultMap="userResult" parameterType="cn.md.entity.UserAccount">
+        SELECT
+            t_user.`uid`,
+            t_user.`clzno`,
+            t_user.`uname`,
+            t_course.`cno`,
+            t_course.`cname`,
+            t_mark.*
+        FROM
+            t_user
+                INNER JOIN t_course
+                LEFT JOIN t_mark ON (
+                        t_user.uid = t_mark.student_id
+                    AND t_mark.course_id = t_course.cno
+                )
+        WHERE
+            t_user.clzno = #{clzno}
+          AND t_course.cno = #{cno};
+    </select>
+</mapper>
+<!--        &#45;&#45;         SELECT * FROM t_user-->
+<!--        &#45;&#45;             JOIN t_clz ON t_user.clzno = t_clz.clzno-->
+<!--        &#45;&#45;             JOIN t_task ON t_user.clzno = t_task.clzno-->
+<!--        &#45;&#45;             JOIN t_course ON t_task.cno = t_course.cno-->
+<!--        &#45;&#45;             JOIN t_mark ON t_user.uid = t_mark.student_id-->
+<!--        &#45;&#45;             WHERE t_user.clzno = #{clzno} AND t_task.cno = #{cno}-->

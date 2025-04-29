@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.md.dao.GradeMapper">
+    <select id="findAll" resultType="cn.md.entity.Grade">
+        SELECT * FROM t_grade
+    </select>
+</mapper>
