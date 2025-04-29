@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.md.dao.ClzMapper" >
+<!--    public List<Clz> findAll();
+    public int add(Clz clz);
+    public int update(Clz  clz);
+    public int remove(String clzno);
+-->
+    <select id="findAll" resultType="cn.md.entity.Clz">
+        select * from t_clz;
+    </select>
+    <select id="findOne"
+            parameterType="String"
+            resultType="cn.md.entity.Clz">
+        select * from t_clz where clzno=#{clzno};
+    </select>
+    <insert id="add" parameterType="cn.md.entity.Clz">
+        insert into t_clz(clzno, clzname,xid)
+        values (#{clzno}, #{clzname},#{xid})
+    </insert>
+    <update id="update" parameterType="cn.md.entity.Clz">
+        update t_clz set clzname= #{clzname}, xid= #{xid}
+        where clzno = #{clzno}
+    </update>
+    <delete id="remove" parameterType="String" >
+        delete from t_clz where clzno = #{clzno}
+    </delete>
+</mapper>
