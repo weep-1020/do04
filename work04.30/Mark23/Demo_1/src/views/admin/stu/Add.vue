@@ -111,7 +111,6 @@
 				resetForm();
 			})
 			.catch((error) => {
-				console.error("添加失败:", error);
 				ElMessage.error("添加失败");
 			});
 	}
@@ -138,7 +137,7 @@
 				console.log(clzs);
 			})
 			.catch((error) => {
-				console.error("获取课程列表失败:", error);
+				ElMessage.error("获取课程列表失败:", error);
 			});
 
 		$get("/api/public/getGrades").then((resp) => {
@@ -146,7 +145,7 @@
 				console.log(grades);
 			})
 			.catch((error) => {
-				console.error("获取年级表失败",error);
+				ElMessage.error("获取年级表失败",error);
 			});
 	});
 </script>
