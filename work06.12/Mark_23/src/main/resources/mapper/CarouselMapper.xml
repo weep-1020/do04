@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.md.dao.CarouselMapper">
+    <select id="selectAll" parameterType="cn.md.entity.Carousel">
+        SELECT * FROM t_carousel where t_carousel.if_open = 0;
+    </select>
+    <delete id="del" parameterType="cn.md.entity.Carousel">
+        DELETE FROM t_carousel WHERE cid = #{cid}
+    </delete>
+    <insert id="add" parameterType="cn.md.entity.Carousel">
+        INSERT INTO t_carousel(description,pname,pic,if_open) VALUES(#{description},#{pname},#{pic},#{ifOpen})
+    </insert>
+    <update id="update" parameterType="cn.md.entity.Carousel">
+        UPDATE t_carousel
+        <set>
+            <if test="description != null">
+                description = #{description},
+            </if>
+            <if test="pname != null">
+                pname = #{pname},
+            </if>
+            <if test="pic != null">
+                pic = #{pic},
+            </if>
+            <if test="ifOpen != null">
+                if_open = #{ifOpen},
+            </if>
+        </set>
+            where cid = #{cid}
+    </update>
+</mapper>
